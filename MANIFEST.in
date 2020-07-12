@@ -1,0 +1,8 @@
+# Include README
+include *.md
+
+# Include license file
+include LICENSE
+
+# Include the data files
+recursive-include config *
