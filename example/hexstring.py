@@ -6,5 +6,4 @@ print('dec: ', memoryview(b).tolist())
 print('hex: ', ['{:02X}'.format(i) for i in memoryview(b).tolist()])
 
 decoder = asterix4py.AsterixParser(b)
-print('decode result:', type(decoder.get_result()), decoder.get_result())
-
+print('decode: ', decoder.get_result())
