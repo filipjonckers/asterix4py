@@ -1,10 +1,12 @@
 import pathlib
+import shutil
+
 from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '1.0'
-PYTHON_REQUIRES = '>=3.7, <4'
+VERSION = '1.0.1'
+PYTHON_REQUIRES = '>=3.7'
 PACKAGE_NAME = 'asterix4py'
 AUTHOR = 'Filip Jonckers'
 AUTHOR_EMAIL = ''
@@ -18,6 +20,8 @@ CLASSIFIERS = [
       'Development Status :: 3 - Alpha',
       'Programming Language :: Python',
       'Programming Language :: Python :: 3',
+      'Programming Language :: Python :: 3.7',
+      'Programming Language :: Python :: 3.8',
       'Intended Audience :: Developers',
       'Intended Audience :: Information Technology',
       'Intended Audience :: Science/Research',
@@ -40,6 +44,11 @@ PROJECT_URLS = {
 INSTALL_REQUIRES = [
 ]
 
+try:
+    shutil.rmtree("./build")
+except(OSError):
+    pass
+
 setup(name=PACKAGE_NAME,
       version=VERSION,
       description=DESCRIPTION,
@@ -54,6 +63,8 @@ setup(name=PACKAGE_NAME,
       install_requires=INSTALL_REQUIRES,
       python_requires=PYTHON_REQUIRES,
       project_urls=PROJECT_URLS,
+      platforms=['any'],
       include_package_data=True,
+      zip_safe=False,
       packages=find_packages()
       )
