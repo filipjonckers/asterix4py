@@ -1,6 +1,7 @@
 include *.md
 include LICENSE
-global-exclude *.py[cod]
 
 # includes the asterix xml definitions:
 graft asterix4py
+
+global-exclude *.py[cod]
