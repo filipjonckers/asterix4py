@@ -1,8 +1,6 @@
-# Include README
 include *.md
-
-# Include license file
 include LICENSE
+global-exclude *.py[cod]
 
-# Include the data files
-recursive-include config *
+# includes the asterix xml definitions:
+graft asterix4py

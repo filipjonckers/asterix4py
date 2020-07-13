@@ -3,10 +3,11 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '1.0.1'
+VERSION = '1.0'
+PYTHON_REQUIRES = '>=3.7, <4'
 PACKAGE_NAME = 'asterix4py'
 AUTHOR = 'Filip Jonckers'
-AUTHOR_EMAIL = 'jof@skeyes.be'
+AUTHOR_EMAIL = ''
 URL = 'https://github.com/filipjonckers/asterix4py'
 LICENSE = 'MIT License'
 DESCRIPTION = 'Pure python library for decoding Eurocontrol Asterix binary data'
@@ -31,9 +32,12 @@ CLASSIFIERS = [
       'Topic :: Scientific/Engineering :: Interface Engine/Protocol Translator'
 ]
 
+PROJECT_URLS = {
+      'Bug Reports': 'https://github.com/filipjonckers/asterix4py/issues',
+      'Source': 'https://github.com/filipjonckers/asterix4py'
+}
+
 INSTALL_REQUIRES = [
-      # 'xml.dom',
-      # 'json'
 ]
 
 setup(name=PACKAGE_NAME,
@@ -48,5 +52,8 @@ setup(name=PACKAGE_NAME,
       keywords=KEYWORDS,
       classifiers=CLASSIFIERS,
       install_requires=INSTALL_REQUIRES,
+      python_requires=PYTHON_REQUIRES,
+      project_urls=PROJECT_URLS,
+      include_package_data=True,
       packages=find_packages()
       )
