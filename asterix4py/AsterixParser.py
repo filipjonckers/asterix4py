@@ -1,27 +1,36 @@
 from xml.dom import minidom
 
-filenames = {
-    1: 'config/asterix_cat001_1_1.xml',
-    2: 'config/asterix_cat002_1_0.xml',
-    8: 'config/asterix_cat008_1_0.xml',
-    10: 'config/asterix_cat010_1_1.xml',
-    19: 'config/asterix_cat019_1_2.xml',
-    20: 'config/asterix_cat020_1_7.xml',
-    21: 'config/asterix_cat021_1_8.xml',
-    23: 'config/asterix_cat023_1_2.xml',
-    30: 'config/asterix_cat030_6_2.xml',
-    31: 'config/asterix_cat031_6_2.xml',
-    32: 'config/asterix_cat032_7_0.xml',
-    48: 'config/asterix_cat048_1_14.xml',
-    62: 'config/asterix_cat062_1_18.xml',
-    63: 'config/asterix_cat063_1_3.xml',
-    65: 'config/asterix_cat065_1_3.xml',
-    242: 'config/asterix_cat242_1_0.xml',
-    252: 'config/asterix_cat252_7_0.xml'
+try:
+    import importlib.resources as pkg_resources
+except ImportError:  # try backwards compatibility python < 3.7
+    import importlib_resources as pkg_resources
+
+from . import config
+
+astXmlFiles = {
+    1: 'asterix_cat001_1_1.xml',
+    2: 'asterix_cat002_1_0.xml',
+    8: 'asterix_cat008_1_0.xml',
+    10: 'asterix_cat010_1_1.xml',
+    19: 'asterix_cat019_1_2.xml',
+    20: 'asterix_cat020_1_7.xml',
+    21: 'asterix_cat021_1_8.xml',
+    23: 'asterix_cat023_1_2.xml',
+    30: 'asterix_cat030_6_2.xml',
+    31: 'asterix_cat031_6_2.xml',
+    32: 'asterix_cat032_7_0.xml',
+    48: 'asterix_cat048_1_14.xml',
+    62: 'asterix_cat062_1_18.xml',
+    63: 'asterix_cat063_1_3.xml',
+    65: 'asterix_cat065_1_3.xml',
+    242: 'asterix_cat242_1_0.xml',
+    252: 'asterix_cat252_7_0.xml'
 }
+
 
 class AsterixParser:
     """Decode bytearray of asterix data"""
+
     def __init__(self, bytesdata):
         self.bytes = bytesdata
         self.length = 0
@@ -33,7 +42,9 @@ class AsterixParser:
         self.p += 1
 
         try:
-            self.cat = minidom.parse(filenames[cat])
+            xml = pkg_resources.read_text(config, astXmlFiles[cat])
+            self.cat = minidom.parseString(xml)
+
             category = self.cat.getElementsByTagName('Category')[0]
             self.dataitems = category.getElementsByTagName('DataItem')
             uap = category.getElementsByTagName('UAP')[0]
@@ -44,7 +55,6 @@ class AsterixParser:
 
         self.decoded_result[cat] = []
 
-        # ------------------ length -------------------------------
         self.length = int.from_bytes(
             self.bytes[self.p:self.p + 2], byteorder='big', signed=True)
         self.p += 2
@@ -54,6 +64,7 @@ class AsterixParser:
             self.decode()
             self.decoded_result[cat].append(self.decoded)
 
+    """get decoded results in JSON format"""
     def get_result(self):
         return self.decoded_result
 
@@ -129,9 +140,8 @@ class AsterixParser:
                 results[bit_name] = ((data >> (to_ - 1)) & mask)
 
                 if bits.getAttribute('encode') == 'signed':
-                    if results[bit_name] & (1 << (from_ - to_)):       # signed val
-                        results[bit_name] = - \
-                            (1 << (from_ - to_ + 1)) + results[bit_name]
+                    if results[bit_name] & (1 << (from_ - to_)):  # signed val
+                        results[bit_name] = - (1 << (from_ - to_ + 1)) + results[bit_name]
 
                 BitsUnit = bits.getElementsByTagName("BitsUnit")
                 if BitsUnit:
@@ -215,4 +225,3 @@ class AsterixParser:
             results.update(r)
 
         return results
-
