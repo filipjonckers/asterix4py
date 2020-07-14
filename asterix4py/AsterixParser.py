@@ -6,6 +6,7 @@ except ImportError:  # try backwards compatibility python < 3.7
     import importlib_resources as pkg_resources
 
 from . import config
+from . import icao6bitchars
 
 astXmlFiles = {
     1: 'asterix_cat001_1_1.xml',
@@ -65,6 +66,7 @@ class AsterixParser:
             self.decoded_result[cat].append(self.decoded)
 
     """get decoded results in JSON format"""
+
     def get_result(self):
         return self.decoded_result
 
@@ -122,8 +124,7 @@ class AsterixParser:
         data = int.from_bytes(_bytes, byteorder='big', signed=False)
 
         for bits in bitslist:
-            bit_name = bits.getElementsByTagName('BitsShortName')[
-                0].firstChild.nodeValue
+            bit_name = bits.getElementsByTagName('BitsShortName')[0].firstChild.nodeValue
 
             bit = bits.getAttribute('bit')
             if bit != '':
@@ -134,15 +135,37 @@ class AsterixParser:
                 from_ = int(bits.getAttribute('from'))
                 to_ = int(bits.getAttribute('to'))
 
-                if from_ < to_:  # swap values
+                if from_ < to_:  # swap values - fixes errors in xml files
                     from_, to_ = to_, from_
+
                 mask = (1 << (from_ - to_ + 1)) - 1
-                results[bit_name] = ((data >> (to_ - 1)) & mask)
+                fieldBits = ((data >> (to_ - 1)) & mask)  # field value in integer bits
 
-                if bits.getAttribute('encode') == 'signed':
-                    if results[bit_name] & (1 << (from_ - to_)):  # signed val
-                        results[bit_name] = - (1 << (from_ - to_ + 1)) + results[bit_name]
+                encode = bits.getAttribute('encode')
+                if encode:
+                    if encode == 'signed':
+                        if fieldBits & (1 << (from_ - to_)):  # signed val
+                            fieldBits = - (1 << (from_ - to_ + 1)) + fieldBits
+                        results[bit_name] = fieldBits
+                    elif encode == 'ascii':
+                        results[bit_name] = self.bits_to_ascii(fieldBits)
+                    elif encode == 'octal':
+                        # we assume this is always a mode A code (4 digits octal)
+                        results[bit_name] = f"{fieldBits:04o}"
+                    elif encode == '6bitschar':
+                        results[bit_name] = self.bits_to_6bitchars(fieldBits)
+                    elif encode == 'hex':
+                        results[bit_name] = f"{fieldBits:X}"
+                    elif encode == 'unsigned':
+                        results[bit_name] = fieldBits
+                    else:
+                        # unknown encoder
+                        print(f"Warning: unknown encoding: {encode}")
+                        results[bit_name] = fieldBits
+                else:
+                    results[bit_name] = fieldBits
 
+                # lets pretend this is only used for numeric values
                 BitsUnit = bits.getElementsByTagName("BitsUnit")
                 if BitsUnit:
                     scale = BitsUnit[0].getAttribute('scale')
@@ -225,3 +248,18 @@ class AsterixParser:
             results.update(r)
 
         return results
+
+    """convert binary value to 8 bit ascii text string"""
+
+    def bits_to_ascii(self, bitvalue):
+        return bitvalue.to_bytes((bitvalue.bit_length() + 7) // 8, 'big').decode()
+
+    """convert to ICAO 6 bit character sequence (callsign, mode S aircraft identification)"""
+
+    def bits_to_6bitchars(self, bitvalue):
+        cs = ''
+        for i in range(1, 9):
+            p = bitvalue & 0b111111
+            bitvalue = bitvalue >> 6
+            cs = icao6bitchars.ICAO6BITCHARS[p] + cs
+        return cs
