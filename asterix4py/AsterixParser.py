@@ -70,6 +70,19 @@ class AsterixParser:
     def get_result(self):
         return self.decoded_result
 
+    def loadAsterixDefinition(self, cat):
+        try:
+            xml = pkg_resources.read_text(config, astXmlFiles[cat])
+            self.cat = minidom.parseString(xml)
+
+            category = self.cat.getElementsByTagName('Category')[0]
+            self.dataitems = category.getElementsByTagName('DataItem')
+            uap = category.getElementsByTagName('UAP')[0]
+            self.uapitems = uap.getElementsByTagName('UAPItem')
+        except:
+            print('cat %d not supported now' % cat)
+            return
+
     def decode(self):
         # ------------------ FSPEC -------------------------------
         fspec_octets = 0
