@@ -39,7 +39,7 @@ class AsterixParser:
 
         self.decoded_result = {}
 
-        cat = int.from_bytes(self.bytes[0:1], byteorder='big', signed=True)
+        cat = int.from_bytes(self.bytes[0:1], byteorder='big', signed=False)
         self.p += 1
 
         try:
@@ -56,8 +56,7 @@ class AsterixParser:
 
         self.decoded_result[cat] = []
 
-        self.length = int.from_bytes(
-            self.bytes[self.p:self.p + 2], byteorder='big', signed=True)
+        self.length = int.from_bytes(self.bytes[self.p:self.p + 2], byteorder='big', signed=False)
         self.p += 2
 
         while self.p < self.length:
