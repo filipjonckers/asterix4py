@@ -34,35 +34,26 @@ class AsterixParser:
 
     def __init__(self, bytesdata):
         self.bytes = bytesdata
+        self.datasize = len(bytesdata)
         self.length = 0
         self.p = 0
+        self.recordnr = 0
 
         self.decoded_result = {}
 
-        cat = int.from_bytes(self.bytes[0:1], byteorder='big', signed=False)
-        self.p += 1
+        while self.p < self.datasize:
+            startbyte = self.p
+            cat = int.from_bytes(self.bytes[0:1], byteorder='big', signed=False)
+            self.length = int.from_bytes(self.bytes[self.p + 1:self.p + 3], byteorder='big', signed=False)
+            self.p += 3
 
-        try:
-            xml = pkg_resources.read_text(config, astXmlFiles[cat])
-            self.cat = minidom.parseString(xml)
+            self.loadAsterixDefinition(cat)
 
-            category = self.cat.getElementsByTagName('Category')[0]
-            self.dataitems = category.getElementsByTagName('DataItem')
-            uap = category.getElementsByTagName('UAP')[0]
-            self.uapitems = uap.getElementsByTagName('UAPItem')
-        except:
-            print('cat %d not supported now' % cat)
-            return
-
-        self.decoded_result[cat] = []
-
-        self.length = int.from_bytes(self.bytes[self.p:self.p + 2], byteorder='big', signed=False)
-        self.p += 2
-
-        while self.p < self.length:
-            self.decoded = {}
-            self.decode()
-            self.decoded_result[cat].append(self.decoded)
+            while self.p < startbyte + self.length:
+                self.recordnr += 1
+                self.decoded = {'cat': cat}
+                self.decode()
+                self.decoded_result[self.recordnr] = self.decoded
 
     """get decoded results in JSON format"""
 
