@@ -192,11 +192,11 @@ class AsterixParser:
         rep = self.bytes[self.p]
         self.p += 1
 
-        results = []
+        results = {} # each repetitive item is numbered
         fixed = datafield.getElementsByTagName('Fixed')[0]
         for i in range(rep):
             r = self.decode_fixed(fixed)
-            results.append(r)
+            results[i + 1] = r
 
         return results
 
