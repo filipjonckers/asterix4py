@@ -8,6 +8,9 @@ except ImportError:  # try backwards compatibility python < 3.7
 from . import config
 from . import icao6bitchars
 
+dataItemsCache = {}
+uapItemsCache = {}
+
 astXmlFiles = {
     1: 'asterix_cat001_1_1.xml',
     2: 'asterix_cat002_1_0.xml',
@@ -35,7 +38,6 @@ class AsterixParser:
     def __init__(self, bytesdata):
         self.bytes = bytesdata
         self.datasize = len(bytesdata)
-        self.length = 0
         self.p = 0
         self.recordnr = 0
 
@@ -44,15 +46,19 @@ class AsterixParser:
         while self.p < self.datasize:
             startbyte = self.p
             cat = int.from_bytes(self.bytes[0:1], byteorder='big', signed=False)
-            self.length = int.from_bytes(self.bytes[self.p + 1:self.p + 3], byteorder='big', signed=False)
+            length = int.from_bytes(self.bytes[self.p + 1:self.p + 3], byteorder='big', signed=False)
             self.p += 3
 
             self.loadAsterixDefinition(cat)
 
-            while self.p < startbyte + self.length:
+            while self.p < startbyte + length:
                 self.recordnr += 1
                 self.decoded = {'cat': cat}
-                self.decode()
+                if cat in dataItemsCache and cat in uapItemsCache:
+                    self.decode(dataItemsCache.get(cat), uapItemsCache.get(cat))
+                else:
+                    print(f"Error: unable to find asterix cat{cat:03d} in data items cache")
+                    self.p = startbyte + length
                 self.decoded_result[self.recordnr] = self.decoded
 
     """get decoded results in JSON format"""
@@ -62,18 +68,20 @@ class AsterixParser:
 
     def loadAsterixDefinition(self, cat):
         try:
-            xml = pkg_resources.read_text(config, astXmlFiles[cat])
-            self.cat = minidom.parseString(xml)
-
-            category = self.cat.getElementsByTagName('Category')[0]
-            self.dataitems = category.getElementsByTagName('DataItem')
-            uap = category.getElementsByTagName('UAP')[0]
-            self.uapitems = uap.getElementsByTagName('UAPItem')
+            if cat not in dataItemsCache:
+                # add asterix category decoding info to cache (10 times faster!)
+                xml = pkg_resources.read_text(config, astXmlFiles[cat])
+                xmlcat = minidom.parseString(xml)
+                if xmlcat:
+                    category = xmlcat.getElementsByTagName('Category')[0]
+                    dataItemsCache[cat] = category.getElementsByTagName('DataItem')
+                    uap = category.getElementsByTagName('UAP')[0]
+                    uapItemsCache[cat] = uap.getElementsByTagName('UAPItem')
         except:
-            print('cat %d not supported now' % cat)
+            print('cat %d not supported' % cat)
             return
 
-    def decode(self):
+    def decode(self, dataitems, uapitems):
         # ------------------ FSPEC -------------------------------
         fspec_octets = 0
         fspec_octets_len = 0
@@ -91,7 +99,7 @@ class AsterixParser:
 
         for i in range(0, 8 * fspec_octets_len):
             if fspec_octets & mask > 0:
-                itemid = self.uapitems[i].firstChild.nodeValue
+                itemid = uapitems[i].firstChild.nodeValue
                 if itemid != '-':
                     itemids.append(itemid)
 
@@ -99,7 +107,7 @@ class AsterixParser:
 
         # ------------------ decode each dataitem --------------------------
         for itemid in itemids:
-            for dataitem in self.dataitems:
+            for dataitem in dataitems:
                 if dataitem.getAttribute('id') == itemid:
                     dataitemformat = dataitem.getElementsByTagName('DataItemFormat')[0]
                     for cn in dataitemformat.childNodes:
@@ -192,7 +200,7 @@ class AsterixParser:
         rep = self.bytes[self.p]
         self.p += 1
 
-        results = {} # each repetitive item is numbered
+        results = {}  # each repetitive item is numbered
         fixed = datafield.getElementsByTagName('Fixed')[0]
         for i in range(rep):
             r = self.decode_fixed(fixed)
