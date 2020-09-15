@@ -8,6 +8,7 @@
     Author:   B.Bertrand
     Created:  2012-12-17
 	Modified:  28.4.2014. (dsalantic) Special characters removed from BitsShortName, some BitsShortName renamed, tabs aligned
+	Modified:  14.9.2020. (drumlight) Correct definition of RE-bit in I021/160
 
 -->
 
@@ -864,7 +865,7 @@
         <DataItemDefinition>Ground Speed and Track Angle elements of Ground Vector.</DataItemDefinition>
         <DataItemFormat desc="Four-Octet fixed length data item.">
             <Fixed length="4">
-                <Bits bit="16">
+                <Bits bit="32">
                     <BitsShortName>RE</BitsShortName>
                     <BitsName>Range Exceeded Indicator</BitsName>
                     <BitsValue val="0">Value in defined range</BitsValue>
