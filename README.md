@@ -17,3 +17,7 @@ ASTERIX stands for All Purpose STructured EUROCONTROL SuRveillance Information E
 Based on the work of:
 - Wontor - https://github.com/wontor/pyasterix
 - Damir Salantic - https://github.com/CroatiaControlLtd/asterix
+
+
+## Contributors
+- Jake Hawkins - https://github.com/drumlight

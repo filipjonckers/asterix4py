@@ -1,4 +1,5 @@
 #!/bin/zsh
+# requires: pip install twine
 rm -fr dist ;
 rm -fr *.egg-info ;
 
