@@ -18,7 +18,7 @@ astXmlFiles = {
     10: 'asterix_cat010_1_1.xml',
     19: 'asterix_cat019_1_2.xml',
     20: 'asterix_cat020_1_7.xml',
-    21: 'asterix_cat021_1_8.xml',
+    21: 'asterix_cat021_2_2.xml',
     23: 'asterix_cat023_1_2.xml',
     30: 'asterix_cat030_6_2.xml',
     31: 'asterix_cat031_6_2.xml',
@@ -120,6 +120,8 @@ class AsterixParser:
                             r = self.decode_variable(cn)
                         elif cn.nodeName == 'Compound':
                             r = self.decode_compound(cn)
+                        elif cn.nodeName == 'Explicit':
+                            r = self.decode_explicit(cn)
 
                         if r:
                             self.decoded.update({itemid: r})
@@ -259,7 +261,16 @@ class AsterixParser:
             results.update(r)
 
         return results
-
+    
+    def decode_explicit(self, datafield):
+        length = self.bytes[self.p]
+        bit_name = datafield.getElementsByTagName('Bits')[0].getElementsByTagName('BitsShortName')[0].firstChild.nodeValue
+        results = {}  # Special and reserved fields in CAT21 aren't decoded so just return hex string
+        results[bit_name] = self.bytes[self.p+1:self.p + length].hex()
+        self.p += length
+        
+        return results
+        
     """convert binary value to 8 bit ascii text string"""
 
     def bits_to_ascii(self, bitvalue):

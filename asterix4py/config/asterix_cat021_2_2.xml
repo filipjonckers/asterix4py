@@ -3,16 +3,16 @@
 
 <!--
 
-    Asterix Category 021 v1.8 definition
+    Asterix Category 021 v2.2 definition
 
     Author:   B.Bertrand
     Created:  2012-12-17
 	Modified:  28.4.2014. (dsalantic) Special characters removed from BitsShortName, some BitsShortName renamed, tabs aligned
-	Modified:  14.9.2020. (drumlight) Correct definition of RE-bit in I021/160
+    Modified:  14.9.2020 (drumlight) Updated to v2.2 definitions
 
 -->
 
-<Category id="021" name="Surveillance Data Exchange - Part 12 ADS-B Reports" ver="1.8">
+<Category id="021" name="Surveillance Data Exchange - Part 12 ADS-B Reports" ver="2.2">
     <DataItem id="008" rule="optional">
         <DataItemName>Aircraft Operational Status</DataItemName>
         <DataItemDefinition>Identification of the operational services available in the aircraft while airborne.</DataItemDefinition>
@@ -57,8 +57,10 @@
                     <BitsValue val="1">TCAS not installed or not operational</BitsValue>
                 </Bits>
                 <Bits bit="1">
-                    <BitsShortName>spare</BitsShortName>
-                    <BitsName>spare bit, set to 0</BitsName>
+                    <BitsShortName>SA</BitsShortName>
+                    <BitsName>Single Antenna</BitsName>
+                    <BitsValue val="0">Antenna Diversity</BitsValue>
+                    <BitsValue val="1">Single Antenna Only</BitsValue>
                 </Bits>
             </Fixed>
         </DataItemFormat>
@@ -239,17 +241,10 @@
                     </Bits>
                 </Fixed>
                 <Fixed length="1">
-                    <Bits bit="8">
-                        <BitsShortName>EC7</BitsShortName>
-                        <BitsName>Error Condition 7</BitsName>
-                        <BitsValue val="0">Error Condition 7 not existing</BitsValue>
-                        <BitsValue val="1">Error Condition 7 existing</BitsValue>
-                    </Bits>
-                    <Bits bit="7">
-                        <BitsShortName>EC6</BitsShortName>
-                        <BitsName>Error Condition 6</BitsName>
-                        <BitsValue val="0">Error Condition 6 not existing</BitsValue>
-                        <BitsValue val="1">Error Condition 6 existing</BitsValue>
+                    <Bits from="8" to="7">
+                        <BitsShortName>spare</BitsShortName>
+                        <BitsName>Spare bits set to 0</BitsName>
+                        <BitsConst>0</BitsConst>
                     </Bits>
                     <Bits bit="6">
                         <BitsShortName>IPC</BitsShortName>
@@ -482,6 +477,48 @@
                         <BitsValue val="1">Extension into next extent</BitsValue>
                     </Bits>
                 </Fixed>
+                <Fixed length="1">
+                    <Bits from="8" to="7">
+                            <BitsShortName>spare</BitsShortName>
+                            <BitsName>Spare bits set to 0</BitsName>
+                            <BitsConst>0</BitsConst>
+                    </Bits>
+                    <Bits bit="6">
+                        <BitsShortName>SILS</BitsShortName>
+                        <BitsName>Surveillance Integrity Level-Supplement</BitsName>
+                        <BitsValue val="0">measured per flight-hour</BitsValue>
+                        <BitsValue val="1">measured per sample</BitsValue>
+                    </Bits>
+                    <Bits from="5" to="4">
+                        <BitsShortName>SDA</BitsShortName>
+                        <BitsName>Horizontal Position System Design Assurance Level</BitsName>
+                    </Bits>
+                    <Bits from="3" to="2">
+                        <BitsShortName>GVA</BitsShortName>
+                        <BitsName>Geometric Altitude Accuracy</BitsName>
+                    </Bits>
+                    <Bits bit="1" fx="1">
+                        <BitsShortName>FX</BitsShortName>
+                        <BitsValue val="0">End of Data Item</BitsValue>
+                        <BitsValue val="1">Extension into next extent</BitsValue>
+                    </Bits>
+                </Fixed>
+                <Fixed length="1">
+                    <Bits from="8" to="5">
+                        <BitsShortName>PIC</BitsShortName>
+                        <BitsName>Position Integrity Category</BitsName>
+                    </Bits>
+                    <Bits from="4" to="2">
+                            <BitsShortName>spare</BitsShortName>
+                            <BitsName>Spare bits set to 0</BitsName>
+                            <BitsConst>0</BitsConst>
+                    </Bits>
+                    <Bits bit="1" fx="1">
+                        <BitsShortName>FX</BitsShortName>
+                        <BitsValue val="0">End of Data Item</BitsValue>
+                        <BitsValue val="1">Extension into next extent</BitsValue>
+                    </Bits>
+                </Fixed>
             </Variable>
         </DataItemFormat>
     </DataItem>
@@ -629,12 +666,12 @@
         <DataItemDefinition>Position in WGS-84 Co-ordinates.</DataItemDefinition>
         <DataItemFormat desc="Six-octet fixed length Data Item.">
             <Fixed length="6">
-                <Bits from="25" to="48" encode="signed">
+                <Bits from="48" to="25" encode="signed">
 					<BitsShortName>Lat</BitsShortName>
 					<BitsName>Latitude in WGS.84 in twos complement. Range -90 &lt;= Lat &lt;= 90 deg.</BitsName>
                     <BitsUnit scale="0.000021457672119140625">deg</BitsUnit>
                 </Bits>
-                <Bits from="1" to="24" encode="signed">
+                <Bits from="24" to="1" encode="signed">
 					<BitsShortName>Lon</BitsShortName>
 					<BitsName>Longitude in WGS.84 in twos complement. Range -180 &lt;= longitude &lt; 180 deg.</BitsName>
                     <BitsUnit scale="0.000021457672119140625">deg</BitsUnit>
@@ -941,10 +978,23 @@
         <DataItemDefinition>Status of the target</DataItemDefinition>
         <DataItemFormat desc="One-octet fixed length Data Item">
             <Fixed length="1">
-                <Bits from="8" to="6">
-                    <BitsShortName>spare</BitsShortName>
-                    <BitsName>Spare bits set to zero</BitsName>
-                    <BitsConst>0</BitsConst>
+                <Bits bit="8">
+                    <BitsShortName>ICF</BitsShortName>
+                    <BitsName>Intent Change Flag</BitsName>
+                    <BitsValue val="0">No intent change active</BitsValue>
+                    <BitsValue val="1">Intent change flag raised</BitsValue>
+                </Bits>
+                <Bits bit="7">
+                    <BitsShortName>LNAV</BitsShortName>
+                    <BitsName>LNAV Mode</BitsName>
+                    <BitsValue val="0">LNAV Mode engaged</BitsValue>
+                    <BitsValue val="1">LNAV Mode not engaged</BitsValue>
+                </Bits>
+                <Bits bit="6">
+                    <BitsShortName>ME</BitsShortName>
+                    <BitsName>Military Emergency</BitsName>
+                    <BitsValue val="0">No Military Emergency</BitsValue>
+                    <BitsValue val="1">Military Emergency</BitsValue>
                 </Bits>
                 <Bits from="5" to="3">
                     <BitsShortName>PS</BitsShortName>
@@ -967,6 +1017,7 @@
                 </Bits>
             </Fixed>
         </DataItemFormat>
+        <DataItemNote>Bit 8 (ICF), when set to 1 indicates that new information is available in the Mode S GICB registers 40, 41 or 42.</DataItemNote>
     </DataItem>
 
     <DataItem id="210" rule="optional">
@@ -1123,9 +1174,37 @@
         <DataItemDefinition>Currently active Resolution Advisory (RA), if any, generated by the ACAS associated with the transponder transmitting the RA message and threat identity data.</DataItemDefinition>
         <DataItemFormat desc="Seven-octet fixed length Data Item.">
             <Fixed length="7">
-                <Bits from="56" to="1">
+                <Bits from="56" to="52">
+                    <BitsShortName>TYP</BitsShortName>
+                    <BitsName>Message Type</BitsName>
+                </Bits>
+                <Bits from="51" to="49">
+                    <BitsShortName>STYP</BitsShortName>
+                    <BitsName>Message Sub-Type</BitsName>
+                </Bits>
+                <Bits from="48" to="35">
                     <BitsShortName>ARA</BitsShortName>
-                    <BitsName>Information conveyed in an active ACAS Resoulution Advisory.</BitsName>
+                    <BitsName>Active Resolution Advisories</BitsName>
+                </Bits>
+                <Bits from="34" to="31">
+                    <BitsShortName>RAC</BitsShortName>
+                    <BitsName>RA complement record</BitsName>
+                </Bits>
+                <Bits bit="30">
+                    <BitsShortName>RAT</BitsShortName>
+                    <BitsName>RA Terminated</BitsName>
+                </Bits>
+                <Bits bit="29">
+                    <BitsShortName>MTE</BitsShortName>
+                    <BitsName>Multiple Threat Encounter</BitsName>
+                </Bits>
+                <Bits from="28" to="27">
+                    <BitsShortName>TTI</BitsShortName>
+                    <BitsName>Threat type indicator</BitsName>
+                </Bits>
+                <Bits from="26" to="1">
+                    <BitsShortName>TID</BitsShortName>
+                    <BitsName>Threat identity indicator</BitsName>
                 </Bits>
             </Fixed>
         </DataItemFormat>
@@ -1181,13 +1260,19 @@
                 </Fixed>
                 <Fixed length="1">
                     <Bits from="8" to="5">
+                        <BitsShortName>length_width</BitsShortName>
+                        <BitsName>Length and width of the aircraft</BitsName>
+                    </Bits>
+                    <Bits from="4" to="2">
                         <BitsShortName>spare</BitsShortName>
                         <BitsName>Spare bits set to zero</BitsName>
                         <BitsConst>0</BitsConst>
                     </Bits>
-                    <Bits from="4" to="1">
-                        <BitsShortName>length_width</BitsShortName>
-                        <BitsName>Length and width of the aircraft</BitsName>
+                    <Bits bit="1" fx="1">
+                        <BitsShortName>FX</BitsShortName>
+                        <BitsName>FX Extension indicator</BitsName>
+                        <BitsValue val="0">no extension</BitsValue>
+                        <BitsValue val="1">extension into first extent</BitsValue>
                     </Bits>
                 </Fixed>
             </Variable>
@@ -1532,6 +1617,35 @@
         </DataItemFormat>
     </DataItem>
 
+    <DataItem id="RE" rule="optional">
+        <DataItemName>Reserved Expansion</DataItemName>
+        <DataItemDefinition>Reserved information</DataItemDefinition>
+        <DataItemFormat desc="Explicit data length item">
+            <Explicit>
+                <Repetitive>
+                    <Fixed length="1">
+                        <Bits from="8" to="1">
+                            <BitsShortName>REval</BitsShortName>
+                        </Bits>
+                    </Fixed>  
+                </Repetitive>       
+            </Explicit>
+        </DataItemFormat>
+    </DataItem>
+
+    <DataItem id="SP" rule="optional">
+        <DataItemName>Special Purpose</DataItemName>
+        <DataItemDefinition>Special information</DataItemDefinition>
+        <DataItemFormat desc="Explicit data length item">
+            <Explicit>
+                <Fixed length="1">
+                    <Bits from="8" to="1">
+						<BitsShortName>SPval</BitsShortName>
+                    </Bits>
+                </Fixed>         
+            </Explicit>
+        </DataItemFormat>
+    </DataItem>
 
     <UAP>
         <UAPItem bit="0" frn="1" len="2">010</UAPItem>
