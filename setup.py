@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 HERE = pathlib.Path(__file__).parent
 
-VERSION = '1.0.5'
+VERSION = '1.0.6'
 PYTHON_REQUIRES = '>=3.7'
 PACKAGE_NAME = 'asterix4py'
 AUTHOR = 'Filip Jonckers'

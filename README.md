@@ -1,13 +1,14 @@
 # asterix4py
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/)
-[![GitHub license](https://img.shields.io/github/license/Naereen/StrapDown.js.svg)](https://github.com/Naereen/StrapDown.js/blob/master/LICENSE)
-[![GitHub release](https://img.shields.io/github/release/Naereen/StrapDown.js.svg)](https://GitHub.com/Naereen/StrapDown.js/releases/)
-[![GitHub contributors](https://img.shields.io/github/contributors/Naereen/StrapDown.js.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/contributors/)
-[![GitHub issues](https://img.shields.io/github/issues/Naereen/StrapDown.js.svg)](https://GitHub.com/Naereen/StrapDown.js/issues/)
+[![GitHub license](https://img.shields.io/github/license/filipjonckers/asterix4py)](https://github.com/filipjonckers/asterix4py/blob/master/LICENSE)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
+[![GitHub contributors](https://img.shields.io/github/contributors/filipjonckers/asterix4py)](https://github.com/filipjonckers/asterix4py/graphs/contributors)
 
-
+[![GitHub release](https://img.shields.io/github/workflow/status/filipjonckers/asterix4py/Publish%20package%20to%20PyPi?style=flat-square)](https://github.com/filipjonckers/asterix4py/releases)
+[![GitHub release](https://img.shields.io/github/v/release/filipjonckers/asterix4py)](https://github.com/filipjonckers/asterix4py/releases)
+[![GitHub releasedate](https://img.shields.io/github/release-date/filipjonckers/asterix4py)](https://github.com/filipjonckers/asterix4py/releases)
+[![GitHub issues](https://img.shields.io/github/issues/filipjonckers/asterix4py)](https://github.com/filipjonckers/asterix4py/issues)
 
 
 Pure python library for parsing/decoding EUROCONTROL ASTERIX protocol binary data.
