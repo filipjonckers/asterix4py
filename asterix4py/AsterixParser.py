@@ -49,6 +49,11 @@ class AsterixParser:
             length = int.from_bytes(self.bytes[self.p + 1:self.p + 3], byteorder='big', signed=False)
             self.p += 3
 
+            if cat not in astXmlFiles:
+                # ignore unknown categories
+                self.p += length
+                continue
+
             self.loadAsterixDefinition(cat)
 
             while self.p < startbyte + length:
