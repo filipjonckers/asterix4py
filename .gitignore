@@ -1,3 +1,5 @@
+# output files
+*.csv
 # pycharm
 .idea
 # non public stuff
