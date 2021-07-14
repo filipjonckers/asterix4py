@@ -12,14 +12,15 @@ import asterix4py
 ####################################################################################################
 
 FILE = '../sample/cat062.ast'
-HEADER = ["timestamp", "TSE", "lat", "lon", "x", "y", "MFL", "ADR", "ACID", "SAL", "FSS", "MHG", "IAS", "IAR", "BPS", "age_MDS", "age_MFL", "age_FSS", "age_MHG", "age_IAR", "age_BPS"]
+HEADER = ["timestamp", "TSE", "lat", "lon", "x", "y", "MFL", "ADR", "ACID", "SAL", "FSS", "MAH", "IAS", "TAS", "BPS",
+          "MDS age", "MFL age", "FSS age", "MHG age", "IAR age", "TAS age", "BPS age"]
 
 midnight = datetime.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
 start = time.perf_counter()
 
 with open('daps_age.csv', mode='w') as outfile:
-    out = csv.writer(sys.stdout, delimiter=';')
-    #out = csv.writer(outfile, delimiter=';')
+    out = csv.writer(outfile, delimiter=';')
+    # out = csv.writer(sys.stdout, delimiter=';')
     out.writerow(HEADER)
 
     with open(FILE, 'rb') as astfile:
@@ -57,37 +58,44 @@ with open('daps_age.csv', mode='w') as outfile:
                 else:
                     data.extend([""] * 2)
 
+                # MFL in flight levels (instead of feet)
                 if plot.get('136'):
-                    data.append(f"{plot['136'].get('MFL', 0)}")
+                    data.append(f"{plot['136'].get('MFL', 0) / 100}")
                 else:
                     data.append("")
 
                 if plot.get('380'):
                     data.append(f"{plot['380'].get('ADR', 0):06X}")
-                    data.append(f"{plot['380'].get('ACID', '')}".rstrip())
-                    data.append(f"{plot['380'].get('SAL', 0)}")
-                    data.append(f"{plot['380'].get('FSS', 0)}")
-                    data.append(f"{plot['380'].get('MHG', 0)}")
-                    data.append(f"{plot['380'].get('IAS', 0)}")
-                    data.append(f"{plot['380'].get('IAR', 0)}")
-                    data.append(f"{800 + plot['380'].get('BPS', 0)}")
+                    data.append(f"{plot['380'].get('ACID', '')}".rstrip())  # BDS20
+                    data.append(f"{plot['380'].get('SAL', '')}")  # BDS40 SAL
+                    data.append(f"{plot['380'].get('FSS', '')}")  # BDS40 FSSA
+                    data.append(f"{plot['380'].get('MAH', '')}")  # BDS60 MHG
+                    data.append(f"{plot['380'].get('IAS', '')}")  # BDS60 IAS
+                    data.append(f"{plot['380'].get('TAS', '')}")  # BDS50 TAS
+                    # data.append(f"{800 + plot['380'].get('BPS', 0)}")  # BDS40 BPS - add 800 hPa
+                    bps = 800 + plot['380'].get('BPS', 0)  # BDS40 BPS - add 800 hPa
+                    if bps > 800:
+                        data.append(bps)  # BDS40 BPS - add 800 hPa
+                    else:
+                        data.append('')
                 else:
-                    data.extend([""] * 5)
+                    data.extend([""] * 8)
 
                 if plot.get('290'):
                     data.append(f"{plot['290'].get('MDS', '')}")
                 else:
-                    data.append("")
+                    data.append('')
 
                 if plot.get('295'):
                     data.append(f"{plot['295'].get('MFL', '')}")
                     data.append(f"{plot['295'].get('FSS', '')}")
                     data.append(f"{plot['295'].get('MHG', '')}")
                     data.append(f"{plot['295'].get('IAR', '')}")
+                    data.append(f"{plot['295'].get('TAS', '')}")
                     data.append(f"{plot['295'].get('BPS', '')}")
                 else:
-                    data.extend([""] * 4)
+                    data.extend([""] * 6)
 
                 out.writerow(data)
 
-            data = astfile.read(3)
+            data = astfile.read(3)  # read next Asterix header
