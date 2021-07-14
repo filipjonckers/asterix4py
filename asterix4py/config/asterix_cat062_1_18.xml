@@ -1996,7 +1996,7 @@
                     </Bits>
 
                     <Bits from="13" to="1" encode="signed">
-                        <BitsShortName>Alt</BitsShortName>
+                        <BitsShortName>SAL</BitsShortName>
                         <BitsName>Altitude</BitsName>
                         <BitsUnit scale="25" min="-1300" max="100000">ft</BitsUnit>
                     </Bits>
@@ -2021,7 +2021,7 @@
                         <BitsValue val="1">Active</BitsValue>
                     </Bits>
                     <Bits from="13" to="1" encode="signed">
-                        <BitsShortName>Alt</BitsShortName>
+                        <BitsShortName>FSS</BitsShortName>
                         <BitsName>Altitude</BitsName>
                         <BitsUnit scale="25" min="-1300" max="100000">ft</BitsUnit>
                     </Bits>
