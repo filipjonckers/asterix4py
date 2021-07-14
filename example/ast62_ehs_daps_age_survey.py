@@ -19,7 +19,7 @@ midnight = datetime.datetime.now().replace(hour=0, minute=0, second=0, microseco
 start = time.perf_counter()
 
 with open('daps_age.csv', mode='w') as outfile:
-    out = csv.writer(outfile, delimiter=';')
+    out = csv.writer(outfile, delimiter=',')
     # out = csv.writer(sys.stdout, delimiter=';')
     out.writerow(HEADER)
 
